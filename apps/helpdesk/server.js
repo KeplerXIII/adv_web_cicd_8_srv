@@ -57,8 +57,12 @@ const chat = ['welcome to our chat', '1', 'teest', 'teest', '1', 'teest', 'teest
 
 wsServer.on('connection', (ws) => {
   ws.on('message', (message) => {
-    chat.push(message)
-    ws.send(JSON.stringify({ chat: [message.toString()] }))
+    const messageTxt = message.toString()
+    const sendData = JSON.stringify({ chat: [messageTxt] })
+    chat.push(messageTxt)
+    Array.from(wsServer.clients)
+      .filter(client => client.readyState === WS.OPEN)
+      .forEach(client => client.send(sendData))
   })
   ws.send(JSON.stringify({ chat }))
 })
