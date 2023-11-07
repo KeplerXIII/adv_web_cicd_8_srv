@@ -1,0 +1,26 @@
+{
+  "name": "helpdesk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "start": "forever ./apps/helpdesk/helpdesk.js",
+    "watch": "forever -w ./apps/helpdesk/helpdesk.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.52.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-n": "^16.2.0",
+    "eslint-plugin-promise": "^6.1.1"
+  },
+  "dependencies": {
+    "forever": "^0.14.2",
+    "koa": "^2.14.2",
+    "koa-body": "^6.0.1"
+  }
+}
