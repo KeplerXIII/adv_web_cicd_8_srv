@@ -2,6 +2,7 @@ const http = require('http')
 const Koa = require('koa')
 const koaBody = require('koa-body').default
 const router = require('../../routes')
+const WS = require('ws')
 
 const app = new Koa()
 
@@ -47,6 +48,20 @@ app.use(router())
 const server = http.createServer(app.callback())
 
 const port = 8800
+
+const wsServer = new WS.Server({
+  server
+})
+
+const chat = ['welcome to our chat', '1', 'teest', 'teest', '1', 'teest', 'teest', 'teest', 'teest', 'teest']
+
+wsServer.on('connection', (ws) => {
+  ws.on('message', (message) => {
+    chat.push(message)
+    ws.send(JSON.stringify({ chat: [message.toString()] }))
+  })
+  ws.send(JSON.stringify({ chat }))
+})
 
 server.listen(port, (err) => {
   if (err) {
