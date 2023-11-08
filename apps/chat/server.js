@@ -66,11 +66,15 @@ wsServer.on('connection', (ws) => {
     const data = JSON.parse(message.toString())
     data.type = 'msg'
 
-    const sendData = JSON.stringify(data)
     name = data.name
     chat.addMessage({ name: data.name, message: data.message })
 
+    const sendData = JSON.stringify(data)
     sendAll(sendData)
+
+    const usersData = { type: 'users', users: chat.users }
+    const sendUsersData = JSON.stringify(usersData)
+    sendAll(sendUsersData)
   })
 
   ws.on('close', () => {
