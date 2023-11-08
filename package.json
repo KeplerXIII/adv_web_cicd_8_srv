@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
-    "start": "forever ./apps/helpdesk/server.js",
-    "watch": "forever -w ./apps/helpdesk/server.js",
+    "start": "forever ./apps/chat/server.js",
+    "watch": "forever -w ./apps/chat/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

@@ -3,6 +3,7 @@ const Koa = require('koa')
 const koaBody = require('koa-body').default
 const router = require('../../routes')
 const WS = require('ws')
+const chat = require('../../db/index')
 
 const app = new Koa()
 
@@ -53,18 +54,31 @@ const wsServer = new WS.Server({
   server
 })
 
-const chat = ['welcome to our chat', '1', 'teest', 'teest', '1', 'teest', 'teest', 'teest', 'teest', 'teest']
-
 wsServer.on('connection', (ws) => {
+  let name = ''
   ws.on('message', (message) => {
-    const messageTxt = message.toString()
-    const sendData = JSON.stringify({ chat: [messageTxt] })
-    chat.push(messageTxt)
+    const data = JSON.parse(message.toString())
+    data.type = 'msg'
+
+    const sendData = JSON.stringify(data)
+    name = data.name
+    chat.addMessage({ name: data.name, message: data.message })
+
     Array.from(wsServer.clients)
       .filter(client => client.readyState === WS.OPEN)
       .forEach(client => client.send(sendData))
   })
-  ws.send(JSON.stringify({ chat }))
+
+  ws.on('close', () => {
+    chat.removeUser(name)
+    const data = { type: 'users', users: chat.users }
+    const sendData = JSON.stringify(data)
+    Array.from(wsServer.clients)
+      .filter(client => client.readyState === WS.OPEN)
+      .forEach(client => client.send(sendData))
+  })
+
+  ws.send(JSON.stringify(chat))
 })
 
 server.listen(port, (err) => {
