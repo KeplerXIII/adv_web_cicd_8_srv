@@ -54,6 +54,12 @@ const wsServer = new WS.Server({
   server
 })
 
+function sendAll (data) {
+  Array.from(wsServer.clients)
+    .filter(client => client.readyState === WS.OPEN)
+    .forEach(client => client.send(data))
+}
+
 wsServer.on('connection', (ws) => {
   let name = ''
   ws.on('message', (message) => {
@@ -64,9 +70,7 @@ wsServer.on('connection', (ws) => {
     name = data.name
     chat.addMessage({ name: data.name, message: data.message })
 
-    Array.from(wsServer.clients)
-      .filter(client => client.readyState === WS.OPEN)
-      .forEach(client => client.send(sendData))
+    sendAll(sendData)
   })
 
   ws.on('close', () => {
@@ -74,15 +78,12 @@ wsServer.on('connection', (ws) => {
     if (name) {
       const data = { type: 'users', users: chat.users }
       const sendData = JSON.stringify(data)
-      Array.from(wsServer.clients)
-        .filter(client => client.readyState === WS.OPEN)
-        .forEach(client => client.send(sendData))
+      sendAll(sendData)
+
       chat.addMessage({ name: name, message: 'Покинул чат' })
       const newMessage = { type: 'msg', name: name, message: 'Покинул чат' }
       const sendMessage = JSON.stringify(newMessage)
-      Array.from(wsServer.clients)
-        .filter(client => client.readyState === WS.OPEN)
-        .forEach(client => client.send(sendMessage))
+      sendAll(sendMessage)
     }
   })
 
@@ -92,7 +93,6 @@ wsServer.on('connection', (ws) => {
 server.listen(port, (err) => {
   if (err) {
     console.log(err)
-
     return
   }
 
