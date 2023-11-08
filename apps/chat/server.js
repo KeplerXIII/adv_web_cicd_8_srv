@@ -71,11 +71,19 @@ wsServer.on('connection', (ws) => {
 
   ws.on('close', () => {
     chat.removeUser(name)
-    const data = { type: 'users', users: chat.users }
-    const sendData = JSON.stringify(data)
-    Array.from(wsServer.clients)
-      .filter(client => client.readyState === WS.OPEN)
-      .forEach(client => client.send(sendData))
+    if (name) {
+      const data = { type: 'users', users: chat.users }
+      const sendData = JSON.stringify(data)
+      Array.from(wsServer.clients)
+        .filter(client => client.readyState === WS.OPEN)
+        .forEach(client => client.send(sendData))
+      chat.addMessage({ name: name, message: 'Покинул чат' })
+      const newMessage = { type: 'msg', name: name, message: 'Покинул чат' }
+      const sendMessage = JSON.stringify(newMessage)
+      Array.from(wsServer.clients)
+        .filter(client => client.readyState === WS.OPEN)
+        .forEach(client => client.send(sendMessage))
+    }
   })
 
   ws.send(JSON.stringify(chat))
